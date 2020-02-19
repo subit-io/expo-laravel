@@ -1,6 +1,7 @@
 # Exponent push notifications channel for Laravel
-
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/subit/expo-laravel.svg?style=flat-square)](https://packagist.org/packages/subit/expo-laravel)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE.md)
+[![Total Downloads](https://img.shields.io/packagist/dt/subit/expo-laravel.svg?style=flat-square)](https://packagist.org/packages/subit/expo-laravel)
 
 ## Contents
 
