@@ -9,7 +9,7 @@ use NotificationChannels\ExpoPushNotifications\Models\Recipient;
 class RecipientModelTest extends TestCase
 {
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
 
@@ -20,7 +20,7 @@ class RecipientModelTest extends TestCase
     {
         Recipient::create(
             [
-            'type' => User::class,
+            'type' => Recipient::class,
             'id' => 1,
             'token' => 'ExpoPushToken[1]'
             ]
@@ -28,7 +28,7 @@ class RecipientModelTest extends TestCase
 
         $this->assertDatabaseHas(
             config('exponent-push-notifications.recipients.database.table_name'), [
-            'type' => User::class,
+            'type' => Recipient::class,
             'id' => 1,
             'token' => 'ExpoPushToken[1]'
             ]

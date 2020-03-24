@@ -54,7 +54,7 @@ class ExpoTest extends TestCase
      */
     protected $notifiableUser;
 
-    public function setUp()
+    public function setUp(): void
     {
         parent::setUp();
         //TODO Mock things afterwards
@@ -75,7 +75,7 @@ class ExpoTest extends TestCase
         $this->setUpDatabase();
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         parent::tearDown();
 

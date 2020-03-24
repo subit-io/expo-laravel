@@ -24,7 +24,7 @@ class ExpoChannel
     /**
      * ExpoChannel constructor.
      *
-     * @param Expo       $expo
+     * @param Expo $expo
      * @param Dispatcher $dispatcher
      */
     public function __construct(Expo $expo, Dispatcher $dispatcher)
@@ -36,7 +36,7 @@ class ExpoChannel
     /**
      * Send the given notification.
      *
-     * @param mixed        $notifiable
+     * @param mixed $notifiable
      * @param Notification $notification
      *
      * @return array
@@ -46,8 +46,7 @@ class ExpoChannel
     {
         $tickets = [];
 
-        $recipientType = $notifiable->routeNotificationFor('Exp oPushNotifications')
-            ?: $this->recipientType($notifiable);
+        $recipientType = $notifiable->routeNotificationFor('ExpoPushNotifications') ?: $this->recipientType($notifiable);
 
         $recipient = RecipientRepresentation::create()
             ->type($recipientType)
