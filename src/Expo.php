@@ -33,6 +33,11 @@ class Expo
         return $this->register->removeRecipient($recipient);
     }
 
+    public function removeDevice(string $token)
+    {
+        return $this->register->removeToken($token);
+    }
+
     public function notify($recipients, ExpoMessage $expoMessage, $debug = false)
     {
         $expoMessages = [];

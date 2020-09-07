@@ -23,10 +23,18 @@ interface ExpoRepository
     public function retrieve(RecipientRepresentation $recipient);
 
     /**
-     * Removes an Expo token with a given identifier
+     * Removes an Expo recipient with a given identifier.
      *
      * @param  RecipientRepresentation $recipient
      * @return bool
      */
     public function forget(RecipientRepresentation $recipient): bool;
+
+    /**
+     * Removes an Expo token with a given identifier.
+     *
+     * @param  string $token
+     * @return bool
+     */
+    public function forgetToken(string $token): bool;
 }

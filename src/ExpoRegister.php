@@ -2,8 +2,9 @@
 
 namespace NotificationChannels\ExpoPushNotifications;
 
-use NotificationChannels\ExpoPushNotifications\Exceptions\RegisterExceptions\CouldNotRegisterRecipientException;
 use NotificationChannels\ExpoPushNotifications\Exceptions\RegisterExceptions\CouldNotRemoveRecipientException;
+use NotificationChannels\ExpoPushNotifications\Exceptions\RegisterExceptions\CouldNotRegisterRecipientException;
+use NotificationChannels\ExpoPushNotifications\Exceptions\RegisterExceptions\CouldNotRemoveRecipientTokenException;
 use NotificationChannels\ExpoPushNotifications\Exceptions\RegisterExceptions\InvalidTokenException;
 use NotificationChannels\ExpoPushNotifications\Exceptions\RegisterExceptions\NoRecipientException;
 use NotificationChannels\ExpoPushNotifications\Representations\RecipientRepresentation;
@@ -63,7 +64,7 @@ class ExpoRegister
     }
 
     /**
-     * Removes token of a given recipient
+     * Removes a given recipient
      *
      * @param  RecipientRepresentation $recipient
      * @return bool
@@ -73,6 +74,22 @@ class ExpoRegister
     {
         if (!$this->_repository->forget($recipient)) {
             throw new CouldNotRemoveRecipientException();
+        }
+
+        return true;
+    }
+
+    /**
+     * Removes a given token
+     *
+     * @param  string $token
+     * @return bool
+     * @throws CouldNotRemoveRecipientTokenException
+     */
+    public function removeToken(string $token)
+    {
+        if (!$this->_repository->forgetToken($token)) {
+            throw new CouldNotRemoveRecipientTokenException();
         }
 
         return true;

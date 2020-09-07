@@ -17,8 +17,9 @@
     ],
     "require": {
         "php": "^7.1.3",
+        "ext-json": "^7.4",
         "laravel/framework": "^6.0||^7.0",
-        "subit/php-expo-sdk": "1.0.*"
+        "subit/php-expo-sdk": "1.1.*"
     },
     "require-dev": {
         "mockery/mockery": "^1.3",

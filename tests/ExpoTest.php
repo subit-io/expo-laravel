@@ -7,6 +7,7 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\Notification;
 use Mockery;
 use NotificationChannels\ExpoPushNotifications\Exceptions\RegisterExceptions\CouldNotRemoveRecipientException;
+use NotificationChannels\ExpoPushNotifications\Exceptions\RegisterExceptions\CouldNotRemoveRecipientTokenException;
 use NotificationChannels\ExpoPushNotifications\Exceptions\RegisterExceptions\ExpoException;
 use NotificationChannels\ExpoPushNotifications\Exceptions\RegisterExceptions\InvalidTokenException;
 use NotificationChannels\ExpoPushNotifications\Expo;
@@ -57,7 +58,6 @@ class ExpoTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        //TODO Mock things afterwards
 
         $this->repository = new ExpoDatabaseDriver();
 
@@ -115,6 +115,23 @@ class ExpoTest extends TestCase
         $this->expo->subscribe($recipient);
 
         $this->assertTrue($this->expo->unsubscribe($recipient));
+        $this->expectException(CouldNotRemoveRecipientException::class);
+        $this->expo->unsubscribe($recipient);
+    }
+
+    public function testRemoveDevice()
+    {
+        $recipient = RecipientRepresentation::create()
+            ->type('User')
+            ->id('2')
+            ->token('ExponentPushToken[123]');
+
+        $this->expo->subscribe($recipient);
+
+        $this->assertTrue($this->expo->removeDevice($recipient->getToken()));
+
+        $this->expectException(CouldNotRemoveRecipientTokenException::class);
+        $this->expo->removeDevice($recipient->getToken());
     }
 
     public function testUnsubscribeWithNonExistingNotifiable()

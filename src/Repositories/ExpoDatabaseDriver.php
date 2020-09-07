@@ -39,19 +39,24 @@ class ExpoDatabaseDriver implements ExpoRepository
     }
 
     /**
-     * Removes an Expo token with a given identifier.
+     * Removes an Expo recipient with a given identifier.
      *
      * @param  RecipientRepresentation $recipient
      * @return bool
      */
     public function forget(RecipientRepresentation $recipient): bool
     {
-        $query = Recipient::where('type', $recipient->getType())->where('id', $recipient->getId());
+        return Recipient::where('type', $recipient->getType())->where('id', $recipient->getId())->delete() > 0;
+    }
 
-        if ($recipient->getToken()) {
-            $query->where('token', $recipient->getToken());
-        }
-
-        return $query->delete() > 0;
+    /**
+     * Removes an Expo token.
+     *
+     * @param  string $token
+     * @return bool
+     */
+    public function forgetToken(string $token): bool
+    {
+        return Recipient::where('token', $token)->delete() > 0;
     }
 }

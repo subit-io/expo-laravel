@@ -4,12 +4,12 @@
 namespace NotificationChannels\ExpoPushNotifications\Exceptions\RegisterExceptions;
 
 
-class CouldNotRemoveRecipientException extends \Exception
+class CouldNotRemoveRecipientTokenException extends \Exception
 {
     public function __construct()
     {
         parent::__construct();
 
-        $this->message = 'Could not remove recipient, due to internal error.';
+        $this->message = 'Could not remove token, due to internal error.';
     }
 }
