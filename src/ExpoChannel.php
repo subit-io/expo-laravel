@@ -61,7 +61,7 @@ class ExpoChannel
 
             /* @var ExpoMessageTicket $ticket */
             foreach ($tickets as $ticket) {
-                if (!$this->deviceIsRegistered($ticket->getDetails())) {
+                if (!$this->expo->deviceWasRegistered($ticket)) {
                     $this->expo->removeDevice($ticket->getToken());
                 }
             }
@@ -84,25 +84,5 @@ class ExpoChannel
     public function recipientType($notifiable)
     {
         return get_class($notifiable);
-    }
-
-    private function deviceIsRegistered($details)
-    {
-        if (!$details) {
-            return true;
-        }
-        $details = json_decode($details);
-
-        if (property_exists($details, 'error')) {
-            if ($details->error === 'DeviceNotRegistered') {
-                return false;
-            }
-        }
-        if (property_exists($details, 'apns')) {
-            if (property_exists($details->apns, 'error')) {
-                return $details->apns->error === 'DeviceNotRegistered';
-            }
-        }
-        return true;
     }
 }

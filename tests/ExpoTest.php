@@ -3,6 +3,7 @@
 
 namespace NotificationChannels\ExpoPushNotifications\Test;
 
+use Subit\ExpoSdk\ExpoMessageReceipt;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\Notification;
 use Mockery;
@@ -132,6 +133,30 @@ class ExpoTest extends TestCase
 
         $this->expectException(CouldNotRemoveRecipientTokenException::class);
         $this->expo->removeDevice($recipient->getToken());
+    }
+
+    public function testDeviceWasRegisteredWithNoDetails()
+    {
+        $ticket = ExpoMessageTicket::create();
+        $this->assertTrue($this->expo->deviceWasRegistered($ticket));
+    }
+
+    public function testDeviceWasRegisteredWithOtherError()
+    {
+        $receipt = ExpoMessageReceipt::create()->details(json_decode('{"error":"anotherError"}'));
+        $this->assertTrue($this->expo->deviceWasRegistered($receipt));
+    }
+
+    public function testDeviceWasRegisteredWithFailedFCM()
+    {
+        $ticket = ExpoMessageTicket::create()->details('{"error":"DeviceNotRegistered","fault":"developer"}');
+        $this->assertFalse($this->expo->deviceWasRegistered($ticket));
+    }
+
+    public function testDeviceWasRegisteredWithFailedAPNS()
+    {
+        $receipt = ExpoMessageReceipt::create()->details(json_decode('{"apns":{"reason":"Unregistered","statusCode":410},"error":"DeviceNotRegistered","sentAt":1599453184}'));
+        $this->assertFalse($this->expo->deviceWasRegistered($receipt));
     }
 
     public function testUnsubscribeWithNonExistingNotifiable()

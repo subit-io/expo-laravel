@@ -2,6 +2,8 @@
 
 namespace NotificationChannels\ExpoPushNotifications;
 
+use Subit\ExpoSdk\ExpoMessageTicket;
+use Subit\ExpoSdk\ExpoMessageReceipt;
 use NotificationChannels\ExpoPushNotifications\Exceptions\ExpoTransportException;
 use NotificationChannels\ExpoPushNotifications\Exceptions\RegisterExceptions\ExpoException;
 use NotificationChannels\ExpoPushNotifications\Representations\RecipientRepresentation;
@@ -64,5 +66,29 @@ class Expo
         } catch (\Exception $e) {
             throw new ExpoTransportException($e->getMessage());
         }
+    }
+
+    /**
+     * @param ExpoMessageTicket|ExpoMessageReceipt $objectOfInterest
+     */
+    public function deviceWasRegistered($objectOfInterest)
+    {
+        $details = $objectOfInterest->getDetails();
+        if (!$details) {
+            return true;
+        }
+        $details = $objectOfInterest instanceof ExpoMessageTicket ? json_decode($details) : $details;
+
+        if (property_exists($details, 'error')) {
+            if ($details->error === 'DeviceNotRegistered') {
+                return false;
+            }
+        }
+        if (property_exists($details, 'apns')) {
+            if (property_exists($details->apns, 'error')) {
+                return $details->apns->error === 'DeviceNotRegistered';
+            }
+        }
+        return true;
     }
 }
