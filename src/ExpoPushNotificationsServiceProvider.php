@@ -84,5 +84,8 @@ class ExpoPushNotificationsServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->bind(ExpoRepository::class, get_class($this->getRecipientsDriver()));
+        $this->app->bind(Expo::class, function () {
+            return new Expo(new ExpoRegister($this->getRecipientsDriver()));
+        });
     }
 }
