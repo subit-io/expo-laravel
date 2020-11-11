@@ -81,12 +81,15 @@ class Expo
 
         if (property_exists($details, 'error')) {
             if ($details->error === 'DeviceNotRegistered') {
+                var_dump('returning');
                 return false;
             }
         }
         if (property_exists($details, 'apns')) {
             if (property_exists($details->apns, 'error')) {
-                return $details->apns->error === 'DeviceNotRegistered';
+                if ($details->apns->error === 'DeviceNotRegistered') {
+                    return false;
+                }
             }
         }
         return true;

@@ -116,7 +116,7 @@ class ChannelTest extends TestCase
         $tickets = [$ticket];
 
         $this->expo->shouldReceive('notify')->with($recipient, $message, true)->andReturn($tickets);
-        $this->expo->shouldReceive('deviceWasRegistered')->once()->with($ticket);
+        $this->expo->shouldReceive('deviceWasRegistered')->once()->with($ticket)->andReturn(false);
         $this->expo->shouldReceive('removeDevice')->once()->with($ticket->getToken());
         $this->dispatcher->shouldReceive('dispatch')->with('expo-push-notifications', [$this->notifiable, $this->notification, $tickets]);
 
@@ -135,7 +135,7 @@ class ChannelTest extends TestCase
         $tickets = [$ticket];
 
         $this->expo->shouldReceive('notify')->with($recipient, $message, true)->andReturn($tickets);
-        $this->expo->shouldReceive('deviceWasRegistered')->once()->with($ticket);
+        $this->expo->shouldReceive('deviceWasRegistered')->once()->with($ticket)->andReturn(false);
         $this->expo->shouldReceive('removeDevice')->once()->with($ticket->getToken());
         $this->dispatcher->shouldReceive('dispatch')->with('expo-push-notifications', [$this->notifiable, $this->notification, $tickets]);
 
