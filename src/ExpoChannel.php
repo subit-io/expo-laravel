@@ -3,10 +3,10 @@
 namespace NotificationChannels\ExpoPushNotifications;
 
 
+use Throwable;
 use Subit\ExpoSdk\ExpoMessageTicket;
 use Illuminate\Contracts\Events\Dispatcher;
 use Illuminate\Notifications\Events\NotificationFailed;
-use NotificationChannels\ExpoPushNotifications\Exceptions\ExpoTransportException;
 use NotificationChannels\ExpoPushNotifications\Representations\RecipientRepresentation;
 
 class ExpoChannel
@@ -44,15 +44,16 @@ class ExpoChannel
      */
     public function send($notifiable, $notification): array
     {
-        $tickets = [];
-
-        $recipientType = $notifiable->routeNotificationFor('ExpoPushNotifications') ?: $this->recipientType($notifiable);
-
-        $recipient = RecipientRepresentation::create()
-            ->type($recipientType)
-            ->id($notifiable->getKey());
-
         try {
+
+            $tickets = [];
+
+            $recipientType = $notifiable->routeNotificationFor('ExpoPushNotifications') ?: $this->recipientType($notifiable);
+
+            $recipient = RecipientRepresentation::create()
+                ->type($recipientType)
+                ->id($notifiable->getKey());
+
             $tickets = $this->expo->notify(
                 $recipient,
                 $notification->toExpoPush($notifiable),
@@ -68,7 +69,7 @@ class ExpoChannel
 
             $this->_dispatcher->dispatch('expo-push-notifications', [$notifiable, $notification, $tickets]);
 
-        } catch (ExpoTransportException $e) {
+        } catch (Throwable $e) {
             $this->_dispatcher->dispatch(
                 new NotificationFailed(
                     $notifiable,
