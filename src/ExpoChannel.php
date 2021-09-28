@@ -40,7 +40,6 @@ class ExpoChannel
      * @param $notification
      *
      * @return array
-     * @throws Exceptions\RegisterExceptions\ExpoException
      */
     public function send($notifiable, $notification): array
     {
@@ -75,7 +74,7 @@ class ExpoChannel
                     $notifiable,
                     $notification,
                     'expo-push-notifications',
-                    $e->getMessage()
+                    ['message' => $e->getMessage(), 'exception' => $e]
                 )
             );
         }
