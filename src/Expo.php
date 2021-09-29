@@ -2,13 +2,16 @@
 
 namespace NotificationChannels\ExpoPushNotifications;
 
+use Exception;
+use Subit\ExpoSdk\ExpoMessage;
 use Subit\ExpoSdk\ExpoMessageTicket;
 use Subit\ExpoSdk\ExpoMessageReceipt;
-use NotificationChannels\ExpoPushNotifications\Exceptions\ExpoTransportException;
-use NotificationChannels\ExpoPushNotifications\Exceptions\RegisterExceptions\ExpoException;
-use NotificationChannels\ExpoPushNotifications\Representations\RecipientRepresentation;
 use Subit\ExpoSdk\Expo as ExpoTransport;
-use Subit\ExpoSdk\ExpoMessage;
+use Subit\ExpoSdk\Exceptions\ApiTransferException;
+use Subit\ExpoSdk\Exceptions\ExpoApiEndpointException;
+use NotificationChannels\ExpoPushNotifications\Exceptions\ExpoSdkException;
+use NotificationChannels\ExpoPushNotifications\Representations\RecipientRepresentation;
+use NotificationChannels\ExpoPushNotifications\Exceptions\RegisterExceptions\ExpoException;
 
 class Expo
 {
@@ -25,22 +28,29 @@ class Expo
         $this->register = $expoRegister;
     }
 
-    public function subscribe(RecipientRepresentation $recipient)
+    public function subscribe(RecipientRepresentation $recipient): string
     {
         return $this->register->registerRecipient($recipient);
     }
 
-    public function unsubscribe(RecipientRepresentation $recipient)
+    public function unsubscribe(RecipientRepresentation $recipient): bool
     {
         return $this->register->removeRecipient($recipient);
     }
 
-    public function removeDevice(string $token)
+    public function removeDevice(string $token): bool
     {
         return $this->register->removeToken($token);
     }
 
-    public function notify($recipients, ExpoMessage $expoMessage, $debug = false)
+    /**
+     * @throws ExpoException
+     * @throws ApiTransferException
+     * @throws ExpoApiEndpointException
+     * @throws ExpoSdkException
+     * @throws Exceptions\RegisterExceptions\NoRecipientException
+     */
+    public function notify($recipients, ExpoMessage $expoMessage): array
     {
         $expoMessages = [];
 
@@ -48,7 +58,7 @@ class Expo
             $recipients = [$recipients];
         }
 
-        if (count($recipients) == 0) {
+        if (count($recipients) === 0) {
             throw new ExpoException();
         }
 
@@ -58,20 +68,24 @@ class Expo
         foreach ($tokens as $token) {
             $expoMessageClone = clone $expoMessage;
             $expoMessageClone->to($token);
-            array_push($expoMessages, $expoMessageClone);
+            $expoMessages[] = $expoMessageClone;
         }
 
         try {
             return $this->expoTransport->sendPushNotifications($expoMessages);
-        } catch (\Exception $e) {
-            throw new ExpoTransportException($e->getMessage());
+        } catch (ApiTransferException $apiTransferException) {
+            throw $apiTransferException;
+        } catch (ExpoApiEndpointException $endpointException) {
+            throw $endpointException;
+        } catch (Exception $e) {
+            throw new ExpoSdkException($e->getMessage());
         }
     }
 
     /**
      * @param ExpoMessageTicket|ExpoMessageReceipt $objectOfInterest
      */
-    public function deviceWasRegistered($objectOfInterest)
+    public function deviceWasRegistered($objectOfInterest): bool
     {
         $details = $objectOfInterest->getDetails();
         if (!$details) {
@@ -84,7 +98,7 @@ class Expo
                 return false;
             }
         }
-        
+
         return true;
     }
 }

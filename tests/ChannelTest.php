@@ -7,7 +7,7 @@ use Illuminate\Notifications\Events\NotificationFailed;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Notifications\Notification;
 use Mockery;
-use NotificationChannels\ExpoPushNotifications\Exceptions\ExpoTransportException;
+use NotificationChannels\ExpoPushNotifications\Exceptions\ExpoSdkException;
 use NotificationChannels\ExpoPushNotifications\Expo;
 use NotificationChannels\ExpoPushNotifications\ExpoChannel;
 use NotificationChannels\ExpoPushNotifications\ExpoRegister;
@@ -97,7 +97,7 @@ class ChannelTest extends TestCase
         $recipient = Mockery::type(RecipientRepresentation::class);
         $message = Mockery::type(ExpoMessage::class);
 
-        $this->expo->shouldReceive('notify')->with($recipient, $message, true)->andThrow(ExpoTransportException::class, '');
+        $this->expo->shouldReceive('notify')->with($recipient, $message, true)->andThrow(ExpoSdkException::class, '');
 
         $this->dispatcher->shouldReceive('dispatch')->with(Mockery::type(NotificationFailed::class));
 

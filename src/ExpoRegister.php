@@ -16,7 +16,7 @@ class ExpoRegister
      *
      * @var ExpoRepository
      */
-    private $_repository;
+    private ExpoRepository $_repository;
 
     /**
      * ExpoRegir constructor.
@@ -36,7 +36,7 @@ class ExpoRegister
      * @throws CouldNotRegisterRecipientException
      * @throws InvalidTokenException
      */
-    public function registerRecipient(RecipientRepresentation $recipient)
+    public function registerRecipient(RecipientRepresentation $recipient): string
     {
         if (!$this->isValidExpoPushToken($recipient->getToken())) {
             throw new InvalidTokenException();
@@ -58,7 +58,7 @@ class ExpoRegister
      *
      * @return bool
      */
-    private function isValidExpoPushToken(string $token)
+    private function isValidExpoPushToken(string $token): bool
     {
         return substr($token, 0, 18) === "ExponentPushToken[" && substr($token, -1) === ']';
     }
@@ -70,7 +70,7 @@ class ExpoRegister
      * @return bool
      * @throws CouldNotRemoveRecipientException
      */
-    public function removeRecipient(RecipientRepresentation $recipient)
+    public function removeRecipient(RecipientRepresentation $recipient): bool
     {
         if (!$this->_repository->forget($recipient)) {
             throw new CouldNotRemoveRecipientException();
@@ -86,7 +86,7 @@ class ExpoRegister
      * @return bool
      * @throws CouldNotRemoveRecipientTokenException
      */
-    public function removeToken(string $token)
+    public function removeToken(string $token): bool
     {
         if (!$this->_repository->forgetToken($token)) {
             throw new CouldNotRemoveRecipientTokenException();

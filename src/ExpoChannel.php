@@ -6,7 +6,9 @@ namespace NotificationChannels\ExpoPushNotifications;
 use Throwable;
 use Subit\ExpoSdk\ExpoMessageTicket;
 use Illuminate\Contracts\Events\Dispatcher;
+use Subit\ExpoSdk\Exceptions\ApiTransferException;
 use Illuminate\Notifications\Events\NotificationFailed;
+use NotificationChannels\ExpoPushNotifications\Exceptions\ExpoSdkException;
 use NotificationChannels\ExpoPushNotifications\Representations\RecipientRepresentation;
 
 class ExpoChannel
@@ -55,8 +57,7 @@ class ExpoChannel
 
             $tickets = $this->expo->notify(
                 $recipient,
-                $notification->toExpoPush($notifiable),
-                true
+                $notification->toExpoPush($notifiable)
             );
 
             /* @var ExpoMessageTicket $ticket */
@@ -69,19 +70,30 @@ class ExpoChannel
             $this->_dispatcher->dispatch('expo-push-notifications', [$notifiable, $notification, $tickets]);
 
         } catch (Throwable $e) {
+
+            $considerRetrying = $e instanceof ApiTransferException;
+
             $this->_dispatcher->dispatch(
                 new NotificationFailed(
                     $notifiable,
                     $notification,
                     'expo-push-notifications',
-                    ['message' => $e->getMessage(), 'exception' => $e]
+                    [
+                        'message' => $e->getMessage(),
+                        'exception' => $e,
+                        'considerRetrying' => $considerRetrying,
+                    ]
                 )
             );
+
+            if ($considerRetrying) {
+                throw $e;
+            }
         }
         return $tickets;
     }
 
-    public function recipientType($notifiable)
+    public function recipientType($notifiable): string
     {
         return get_class($notifiable);
     }
