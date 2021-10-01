@@ -70,9 +70,6 @@ class ExpoChannel
             $this->_dispatcher->dispatch('expo-push-notifications', [$notifiable, $notification, $tickets]);
 
         } catch (Throwable $e) {
-
-            $considerRetrying = $e instanceof ApiTransferException;
-
             $this->_dispatcher->dispatch(
                 new NotificationFailed(
                     $notifiable,
@@ -81,14 +78,9 @@ class ExpoChannel
                     [
                         'message' => $e->getMessage(),
                         'exception' => $e,
-                        'considerRetrying' => $considerRetrying,
                     ]
                 )
             );
-
-            if ($considerRetrying) {
-                throw $e;
-            }
         }
         return $tickets;
     }
