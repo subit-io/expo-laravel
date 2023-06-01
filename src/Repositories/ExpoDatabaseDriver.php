@@ -11,37 +11,42 @@ class ExpoDatabaseDriver implements ExpoRepository
     /**
      * Stores an Expo token with a given identifier.
      *
-     * @param  RecipientRepresentation $recipient
+     * @param RecipientRepresentation $recipient
      * @return bool
      */
     public function store(RecipientRepresentation $recipient): bool
     {
-
-        $recipientModel = Recipient::firstOrCreate(
+        $recipientModel = Recipient::firstOrNew(
             [
-            'type' => $recipient->getType(),
-            'id' => $recipient->getId(),
-            'token' => $recipient->getToken()
-            ]
+                'type' => $recipient->getType(),
+                'id' => $recipient->getId(),
+                'device_id' => $recipient->getDeviceId(),
+            ],
         );
+        $recipientModel->token = $recipient->getToken();
+        $recipientModel->save();
         return $recipientModel instanceof Recipient;
     }
 
     /**
      * Retrieves an Expo token with a given identifier.
      *
-     * @param  RecipientRepresentation $recipient
+     * @param RecipientRepresentation $recipient
      * @return array
      */
     public function retrieve(RecipientRepresentation $recipient)
     {
-        return Recipient::where('type', $recipient->getType())->where('id', $recipient->getId())->pluck('token')->toArray();
+        return Recipient::where('type', $recipient->getType())
+            ->where('id', $recipient->getId())
+            ->pluck('token')
+            ->unique('device_id')
+            ->toArray();
     }
 
     /**
      * Removes an Expo recipient with a given identifier.
      *
-     * @param  RecipientRepresentation $recipient
+     * @param RecipientRepresentation $recipient
      * @return bool
      */
     public function forget(RecipientRepresentation $recipient): bool
@@ -52,7 +57,7 @@ class ExpoDatabaseDriver implements ExpoRepository
     /**
      * Removes an Expo token.
      *
-     * @param  string $token
+     * @param string $token
      * @return bool
      */
     public function forgetToken(string $token): bool

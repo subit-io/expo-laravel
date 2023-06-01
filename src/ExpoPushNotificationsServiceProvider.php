@@ -18,6 +18,10 @@ class ExpoPushNotificationsServiceProvider extends ServiceProvider
 
         $repository = $this->getRecipientsDriver();
 
+        if (app()->runningInConsole()) {
+            $this->registerMigrations();
+        }
+
         $this->_shouldPublishMigrations($repository);
 
         $this->app->when(ExpoChannel::class)
@@ -38,7 +42,7 @@ class ExpoPushNotificationsServiceProvider extends ServiceProvider
     {
         $this->publishes(
             [
-            __DIR__ . '/../config/exponent-push-notifications.php' => config_path('exponent-push-notifications.php'),
+                __DIR__ . '/../config/exponent-push-notifications.php' => config_path('exponent-push-notifications.php'),
             ], 'config'
         );
 
@@ -68,7 +72,7 @@ class ExpoPushNotificationsServiceProvider extends ServiceProvider
             $timestamp = date('Y_m_d_His', time());
             $this->publishes(
                 [
-                __DIR__ . '/../migrations/create_expo_notification_recipients_table.php.stub'
+                    __DIR__ . '/../migrations/create_expo_notification_recipients_table.php.stub'
                     => database_path("/migrations/{$timestamp}_create_exponent_push_notification_recipients_table.php"),
                 ],
                 'migrations'
@@ -87,5 +91,10 @@ class ExpoPushNotificationsServiceProvider extends ServiceProvider
         $this->app->bind(Expo::class, function () {
             return new Expo(new ExpoRegister($this->getRecipientsDriver()));
         });
+    }
+
+    protected function registerMigrations()
+    {
+        $this->loadMigrationsFrom(__DIR__ . '/../database/migrations');
     }
 }
