@@ -10,6 +10,7 @@ class RecipientRepresentation
     protected $type;
     protected $id;
     protected $token;
+    protected $device_id;
 
     public function __construct()
     {
@@ -42,6 +43,13 @@ class RecipientRepresentation
         return $this;
     }
 
+    public function deviceId(string $value)
+    {
+        $this->device_id = $value;
+
+        return $this;
+    }
+
     public function toArray()
     {
         $data = [];
@@ -56,6 +64,10 @@ class RecipientRepresentation
 
         if (!is_null($this->token)) {
             $data['token'] = $this->token;
+        }
+
+        if (!is_null($this->device_id)) {
+            $data['device_id'] = $this->device_id;
         }
 
         return $data;
@@ -83,6 +95,11 @@ class RecipientRepresentation
     public function getToken(): ?string
     {
         return $this->token;
+    }
+
+    public function getDeviceId(): string
+    {
+        return $this->device_id;
     }
 
 

@@ -26,7 +26,8 @@ class Recipient extends Model
     protected $fillable = [
         'type',
         'id',
-        'token'
+        'token',
+        'device_id'
     ];
 
     /**
