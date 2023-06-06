@@ -20,17 +20,19 @@ class RecipientModelTest extends TestCase
     {
         Recipient::create(
             [
-            'type' => Recipient::class,
-            'id' => 1,
-            'token' => 'ExpoPushToken[1]'
+                'type' => Recipient::class,
+                'id' => 1,
+                'device_id' => 'ExpoPushDevice[1]',
+                'token' => 'ExpoPushToken[1]'
             ]
         );
 
         $this->assertDatabaseHas(
             config('exponent-push-notifications.recipients.database.table_name'), [
-            'type' => Recipient::class,
-            'id' => 1,
-            'token' => 'ExpoPushToken[1]'
+                'type' => Recipient::class,
+                'id' => 1,
+                'device_id' => 'ExpoPushDevice[1]',
+                'token' => 'ExpoPushToken[1]'
             ]
         );
     }

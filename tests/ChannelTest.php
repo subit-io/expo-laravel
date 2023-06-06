@@ -168,10 +168,3 @@ class TestNotifiable
     }
 }
 
-class TestNotification extends Notification
-{
-    public function toExpoPush($notifiable): ExpoMessage
-    {
-        return ExpoMessage::create()->title('Title');
-    }
-}

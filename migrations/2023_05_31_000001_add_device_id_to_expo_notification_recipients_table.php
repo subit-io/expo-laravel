@@ -4,7 +4,8 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration {
+class AddDeviceIdToExpoNotificationRecipients extends Migration
+{
     /**
      * Run the migrations.
      */
@@ -12,8 +13,11 @@ return new class extends Migration {
     {
         Schema::table(config('exponent-push-notifications.recipients.database.table_name'), function (Blueprint $table) {
             $table->string('device_id')
-                ->unique()
                 ->nullable();
+
+            $table->dropUnique(['type', 'id', 'token']);
+            $table->unique(['type', 'id', 'device_id'], 'expo_notification_recipients_type_id_token_unique');
+
         });
     }
 
@@ -24,7 +28,10 @@ return new class extends Migration {
     {
         Schema::table(config('exponent-push-notifications.recipients.database.table_name'), function (Blueprint $table) {
             $table->dropColumn('device_id');
+            $table->dropUnique(['type', 'id', 'device_id']);
+            $table->unique(['type', 'id', 'token'], 'expo_notification_recipients_type_id_token_unique');
         });
-
     }
-};
+}
+
+;

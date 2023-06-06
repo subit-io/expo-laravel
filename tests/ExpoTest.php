@@ -88,10 +88,10 @@ class ExpoTest extends TestCase
         $recipient = RecipientRepresentation::create()
             ->type('User')
             ->id('1')
+            ->deviceId('ExponentPushDeviceId[123]')
             ->token('ExponentPushToken[123]');
 
         $this->assertEquals($recipient->getToken(), $this->expo->subscribe($recipient));
-
     }
 
     public function testSubscribeInvalidPushToken()
@@ -99,6 +99,7 @@ class ExpoTest extends TestCase
         $recipient = RecipientRepresentation::create()
             ->type('User')
             ->id('1')
+            ->deviceId('ExponentPushDeviceId[123]')
             ->token('InvalidPushToken');
 
         $this->expectException(InvalidTokenException::class);
@@ -111,6 +112,7 @@ class ExpoTest extends TestCase
         $recipient = RecipientRepresentation::create()
             ->type('User')
             ->id('2')
+            ->deviceId('ExponentPushDeviceId[123]')
             ->token('ExponentPushToken[123]');
 
         $this->expo->subscribe($recipient);
@@ -125,6 +127,7 @@ class ExpoTest extends TestCase
         $recipient = RecipientRepresentation::create()
             ->type('User')
             ->id('2')
+            ->deviceId('ExponentPushDeviceId[123]')
             ->token('ExponentPushToken[123]');
 
         $this->expo->subscribe($recipient);
@@ -164,6 +167,7 @@ class ExpoTest extends TestCase
         $recipient = RecipientRepresentation::create()
             ->type('User')
             ->id('4')
+            ->deviceId('ExponentPushDeviceId[123]')
             ->token('ExponentPushToken[123]');
 
         $this->expectException(CouldNotRemoveRecipientException::class);
@@ -175,6 +179,7 @@ class ExpoTest extends TestCase
         $recipient = RecipientRepresentation::create()
             ->type('User')
             ->id('4')
+            ->deviceId('ExponentPushDeviceId[zOqdVVH-Oj278YZmOgyAhd]')
             ->token('ExponentPushToken[zOqdVVH-Oj278YZmOgyAhd]');
 
         $this->expo->subscribe($recipient);
@@ -207,11 +212,13 @@ class ExpoTest extends TestCase
         $recipient = RecipientRepresentation::create()
             ->type('User')
             ->id('4')
+            ->deviceId('ExponentPushDeviceId[zOqdVVH-Oj278YZmOgyAhd]')
             ->token('ExponentPushToken[zOqdVVH-Oj278YZmOgyAhd]');
 
         $recipient2 = RecipientRepresentation::create()
             ->type('Substitute')
             ->id('4')
+            ->deviceId('ExponentPushDeviceId[zOqdVVH-Oj278YZmOgyAhd]')
             ->token('ExponentPushToken[zOqdVVH-Oj278YZmOgyAhd]');
 
         $this->expo->subscribe($recipient);
@@ -231,6 +238,55 @@ class ExpoTest extends TestCase
 
         $ticketsMockReturn = [$ticketReturned1, $ticketReturned2];
 
+        $this->expoTransport
+            ->shouldReceive('sendPushNotifications')
+            ->once()
+            ->andReturn($ticketsMockReturn);
+
+        $tickets = $this->expo->notify($recipients, $expoMessage);
+
+        $this->assertEquals(count($recipients), count($tickets));
+    }
+
+    public function testNotifySingleRecipientWithMultipleDevices()
+    {
+        $recipientA = RecipientRepresentation::create()
+            ->type('User')
+            ->id('5')
+            ->deviceId('ExponentPushDeviceId[1]')
+            ->token('ExponentPushToken[zOqdVVH-Oj278YZmOgyAhd]');
+
+        $recipientB = RecipientRepresentation::create()
+            ->type('User')
+            ->id('5')
+            ->deviceId('ExponentPushDeviceId[2]')
+            ->token('ExponentPushToken[zOqdVVH-Oj278YZmOgyAhd]');
+
+        $recipients = [$recipientA, $recipientB];
+        $this->expo->subscribe($recipientA);
+        $this->expo->subscribe($recipientB);
+
+        $expoMessage = ExpoMessage::create();
+
+        $ticketReturnedA = ExpoMessageTicket::create()
+            ->id('ab808283-9e8e-4723-ae1d-ab643b40a202')
+            ->status('ok');
+
+        $ticketReturnedB = ExpoMessageTicket::create()
+            ->id('9676cb27-4216-48ca-b36d-ef1dd61f896z')
+            ->status('ok');
+
+        $ticketsMockReturn = [$ticketReturnedA, $ticketReturnedB];
+
+        $this->expoTransport
+            ->shouldReceive('sendPushNotifications')
+            ->once()
+            ->andReturn($ticketsMockReturn);
+
+        $tickets = $this->expo->notify($recipients, $expoMessage);
+        /**
+         * @var ExpoMessageTicket $ticket
+         */
         $this->expoTransport
             ->shouldReceive('sendPushNotifications')
             ->once()
