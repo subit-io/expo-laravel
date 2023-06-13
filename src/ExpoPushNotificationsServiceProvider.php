@@ -64,8 +64,9 @@ class ExpoPushNotificationsServiceProvider extends ServiceProvider
      */
     private function _shouldPublishMigrations(ExpoRepository $repository)
     {
+        $timestamp = date('Y_m_d_His', time());
+
         if ($repository instanceof ExpoDatabaseDriver && !class_exists('CreateExponentPushNotificationRecipientsTable')) {
-            $timestamp = date('Y_m_d_His', time());
             $this->publishes(
                 [
                     __DIR__ . '/../migrations/create_expo_notification_recipients_table.php.stub'
@@ -75,16 +76,13 @@ class ExpoPushNotificationsServiceProvider extends ServiceProvider
             );
         }
 
-        if ($repository instanceof ExpoDatabaseDriver && !class_exists('AddDeviceIdToExpoNotificationRecipients')) {
-            $timestamp = date('Y_m_d_His', time());
-            $this->publishes(
-                [
-                    __DIR__ . '/../migrations/create_expo_notification_recipients_table.php.stub'
-                    => database_path("/migrations/{$timestamp}_create_exponent_push_notification_recipients_table.php"),
-                ],
-                'migrations'
-            );
-        }
+        $this->publishes(
+            [
+                __DIR__ . '/../migrations/update_add_device_id_to_expo_notification_recipients_table.php.stub'
+                => database_path("/migrations/{$timestamp}_add_device_id_to_expo_notification_recipients_table.php"),
+            ],
+            'update-migrations'
+        );
     }
 
     /**
