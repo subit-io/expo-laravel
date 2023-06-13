@@ -43,7 +43,7 @@ class RecipientRepresentation
         return $this;
     }
 
-    public function deviceId(string $value)
+    public function deviceId(?string $value)
     {
         $this->device_id = $value;
 
