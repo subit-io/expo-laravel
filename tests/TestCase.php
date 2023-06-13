@@ -85,6 +85,6 @@ abstract class TestCase extends OrchestraTestCase
         include_once __DIR__ . '/../migrations/update_add_device_id_to_expo_notification_recipients_table.php.stub';
 
         (new \CreateExponentPushNotificationRecipientsTable())->up();
-        (new \AddDeviceIdToExpoNotificationRecipients())->up();
+        (new \AddDeviceIdToExpoNotificationRecipientsTable())->up();
     }
 }
