@@ -97,10 +97,12 @@ class RecipientRepresentation
         return $this->token;
     }
 
-    public function getDeviceId(): string
+    /**
+     * @return string
+     */
+    public function getDeviceId(): ?string
     {
         return $this->device_id;
     }
-
 
 }
