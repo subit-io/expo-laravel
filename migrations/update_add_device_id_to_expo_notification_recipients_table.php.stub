@@ -33,5 +33,3 @@ class AddDeviceIdToExpoNotificationRecipients extends Migration
         });
     }
 }
-
-;
