@@ -38,6 +38,7 @@ class ExpoDatabaseDriver implements ExpoRepository
     {
         return Recipient::where('type', $recipient->getType())
             ->where('id', $recipient->getId())
+            ->orderByDesc('created_at')
             ->pluck('token')
             ->unique('device_id')
             ->toArray();
