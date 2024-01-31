@@ -18,7 +18,7 @@
     "require": {
         "php": ">=7.4",
         "ext-json": ">=7.4",
-        "laravel/framework": "^6.0||^7.0||^8.0",
+        "laravel/framework": "^6.0||^7.0||^8.0||^9.0||^10.0",
         "subit/php-expo-sdk": "^2.1.0"
     },
     "require-dev": {
