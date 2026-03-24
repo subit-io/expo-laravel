@@ -15,6 +15,7 @@ use NotificationChannels\ExpoPushNotifications\Repositories\ExpoDatabaseDriver;
 use NotificationChannels\ExpoPushNotifications\Representations\RecipientRepresentation;
 use Subit\ExpoSdk\ExpoMessage;
 use Subit\ExpoSdk\ExpoMessageTicket;
+use PHPUnit\Framework\Attributes\Test;
 use Subit\ExpoSdk\Expo as ExpoTransport;
 
 class ChannelTest extends TestCase
@@ -73,40 +74,36 @@ class ChannelTest extends TestCase
         Mockery::close();
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function itCanSendANotification()
     {
         $recipient = Mockery::type(RecipientRepresentation::class);
         $message = Mockery::type(ExpoMessage::class);
         $tickets = [$this->testTicket];
 
-        $this->expo->shouldReceive('notify')->with($recipient, $message, true)->andReturn($tickets);
+        $this->expo->shouldReceive('notify')->with($recipient, $message)->andReturn($tickets);
         $this->expo->shouldReceive('deviceWasRegistered')->andReturn(true);
         $this->dispatcher->shouldReceive('dispatch')->with('expo-push-notifications', [$this->notifiable, $this->notification, $tickets]);
 
         $this->channel->send($this->notifiable, $this->notification);
+        $this->assertTrue(true);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function itFiresFailureEventOnFailure()
     {
         $recipient = Mockery::type(RecipientRepresentation::class);
         $message = Mockery::type(ExpoMessage::class);
 
-        $this->expo->shouldReceive('notify')->with($recipient, $message, true)->andThrow(ExpoSdkException::class, '');
+        $this->expo->shouldReceive('notify')->with($recipient, $message)->andThrow(ExpoSdkException::class, '');
 
         $this->dispatcher->shouldReceive('dispatch')->with(Mockery::type(NotificationFailed::class));
 
         $this->channel->send($this->notifiable, $this->notification);
+        $this->assertTrue(true);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function itRemovesTokenIfDeviceIsNotRegisteredWithFCM()
     {
         $recipient = Mockery::type(RecipientRepresentation::class);
@@ -115,7 +112,7 @@ class ChannelTest extends TestCase
         $ticket = (new ExpoMessageTicket)->details($details)->token('ABCD');
         $tickets = [$ticket];
 
-        $this->expo->shouldReceive('notify')->with($recipient, $message, true)->andReturn($tickets);
+        $this->expo->shouldReceive('notify')->with($recipient, $message)->andReturn($tickets);
         $this->expo->shouldReceive('deviceWasRegistered')->once()->with($ticket)->andReturn(false);
         $this->expo->shouldReceive('removeDevice')->once()->with($ticket->getToken());
         $this->dispatcher->shouldReceive('dispatch')->with('expo-push-notifications', [$this->notifiable, $this->notification, $tickets]);
@@ -123,9 +120,7 @@ class ChannelTest extends TestCase
         $this->channel->send($this->notifiable, $this->notification);
     }
 
-    /**
-     * @test
-     */
+    #[Test]
     public function itRemovesTokenIfDeviceIsNotRegisteredWithAPNS()
     {
         $recipient = Mockery::type(RecipientRepresentation::class);
@@ -134,7 +129,7 @@ class ChannelTest extends TestCase
         $ticket = (new ExpoMessageTicket)->details($details)->token('ABCD');
         $tickets = [$ticket];
 
-        $this->expo->shouldReceive('notify')->with($recipient, $message, true)->andReturn($tickets);
+        $this->expo->shouldReceive('notify')->with($recipient, $message)->andReturn($tickets);
         $this->expo->shouldReceive('deviceWasRegistered')->once()->with($ticket)->andReturn(false);
         $this->expo->shouldReceive('removeDevice')->once()->with($ticket->getToken());
         $this->dispatcher->shouldReceive('dispatch')->with('expo-push-notifications', [$this->notifiable, $this->notification, $tickets]);
