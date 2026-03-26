@@ -13,25 +13,10 @@
 You can install the package via composer:
 
 ```bash
-composer require subit-io/laravel-expo-notifications
+composer require subit/expo-laravel
 ```
 
-If you are using Laravel 5.5 or higher this package will automatically register itself using [Package Discovery](https://laravel.com/docs/5.5/packages#package-discovery). For older versions of Laravel you must install the service provider manually:
-
-```php
-// config/app.php
-'providers' => [
-    ...
-    NotificationChannels\ExpoPushNotifications\ExpoPushNotificationsServiceProvider::class,
-],
-
-```
-
-Before publish exponent notification migration you must add in .env file:
-
-```bash
-EXPONENT_PUSH_NOTIFICATION_RECIPIENTS_STORAGE_DRIVER=database
-```
+This package supports Laravel 10-13 and will automatically register itself using [Package Discovery](https://laravel.com/docs/packages#package-discovery).
 
 You can publish the migration with:
 
